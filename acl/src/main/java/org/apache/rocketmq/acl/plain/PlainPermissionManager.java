@@ -30,6 +30,7 @@ import org.apache.rocketmq.acl.common.AclConstants;
 import org.apache.rocketmq.acl.common.AclException;
 import org.apache.rocketmq.acl.common.AclUtils;
 import org.apache.rocketmq.acl.common.Permission;
+import org.apache.rocketmq.common.AclConfig;
 import org.apache.rocketmq.common.DataVersion;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.PlainAccessConfig;
@@ -72,7 +73,7 @@ public class PlainPermissionManager {
         JSONObject plainAclConfData = AclUtils.getYamlDataObject(fileHome + File.separator + fileName,
             JSONObject.class);
         if (plainAclConfData == null || plainAclConfData.isEmpty()) {
-            throw new AclException(String.format("%s file  is not data", fileHome + File.separator + fileName));
+            throw new AclException(String.format("%s file is not data", fileHome + File.separator + fileName));
         }
         log.info("Broker plain acl conf data is : ", plainAclConfData.toString());
         JSONArray globalWhiteRemoteAddressesList = plainAclConfData.getJSONArray("globalWhiteRemoteAddresses");
@@ -163,14 +164,13 @@ public class PlainPermissionManager {
         return false;
     }
 
-    private Map<String, Object> createAclAccessConfigMap(Map<String, Object> existedAccoutMap, PlainAccessConfig plainAccessConfig) {
-
-
+    private Map<String, Object> createAclAccessConfigMap(Map<String, Object> existedAccountMap, PlainAccessConfig plainAccessConfig) {
+        
         Map<String, Object> newAccountsMap = null;
-        if (existedAccoutMap == null) {
+        if (existedAccountMap == null) {
             newAccountsMap = new LinkedHashMap<String, Object>();
         } else {
-            newAccountsMap = existedAccoutMap;
+            newAccountsMap = existedAccountMap;
         }
 
         if (StringUtils.isEmpty(plainAccessConfig.getAccessKey()) ||
@@ -268,6 +268,28 @@ public class PlainPermissionManager {
 
         log.error("Users must ensure that the acl yaml config file has globalWhiteRemoteAddresses flag firstly");
         return false;
+    }
+
+    public AclConfig getAllAclConfig() {
+        AclConfig aclConfig = new AclConfig();
+        List<PlainAccessConfig> configs = new ArrayList<>();
+        List<String> whiteAddrs = new ArrayList<>();
+        JSONObject plainAclConfData = AclUtils.getYamlDataObject(fileHome + File.separator + fileName,
+                JSONObject.class);
+        if (plainAclConfData == null || plainAclConfData.isEmpty()) {
+            throw new AclException(String.format("%s file is not data", fileHome + File.separator + fileName));
+        }
+        JSONArray globalWhiteAddrs = plainAclConfData.getJSONArray(AclConstants.CONFIG_GLOBAL_WHITE_ADDRS);
+        if (globalWhiteAddrs != null && !globalWhiteAddrs.isEmpty()) {
+            whiteAddrs = globalWhiteAddrs.toJavaList(String.class);
+        }
+        JSONArray accounts = plainAclConfData.getJSONArray(AclConstants.CONFIG_ACCOUNTS);
+        if (accounts != null && !accounts.isEmpty()) {
+            configs = accounts.toJavaList(PlainAccessConfig.class);
+        }
+        aclConfig.setGlobalWhiteAddrs(whiteAddrs);
+        aclConfig.setPlainAccessConfigs(configs);
+        return aclConfig;
     }
 
     private void watch() {

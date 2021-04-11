@@ -31,6 +31,7 @@ import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.apache.rocketmq.srvutil.ServerUtil;
 import org.apache.rocketmq.tools.command.acl.ClusterAclConfigVersionListSubCommand;
+import org.apache.rocketmq.tools.command.acl.GetAccessConfigSubCommand;
 import org.apache.rocketmq.tools.command.acl.DeleteAccessConfigSubCommand;
 import org.apache.rocketmq.tools.command.acl.UpdateAccessConfigSubCommand;
 import org.apache.rocketmq.tools.command.acl.UpdateGlobalWhiteAddrSubCommand;
@@ -58,6 +59,7 @@ import org.apache.rocketmq.tools.command.message.QueryMsgByIdSubCommand;
 import org.apache.rocketmq.tools.command.message.QueryMsgByKeySubCommand;
 import org.apache.rocketmq.tools.command.message.QueryMsgByOffsetSubCommand;
 import org.apache.rocketmq.tools.command.message.QueryMsgByUniqueKeySubCommand;
+import org.apache.rocketmq.tools.command.message.QueryMsgTraceByIdSubCommand;
 import org.apache.rocketmq.tools.command.message.SendMessageCommand;
 import org.apache.rocketmq.tools.command.namesrv.DeleteKvConfigCommand;
 import org.apache.rocketmq.tools.command.namesrv.GetNamesrvConfigCommand;
@@ -163,6 +165,7 @@ public class MQAdminStartup {
         initCommand(new QueryMsgByKeySubCommand());
         initCommand(new QueryMsgByUniqueKeySubCommand());
         initCommand(new QueryMsgByOffsetSubCommand());
+        initCommand(new QueryMsgTraceByIdSubCommand());
 
         initCommand(new PrintMessageSubCommand());
         initCommand(new PrintMessageByQueueCommand());
@@ -209,6 +212,7 @@ public class MQAdminStartup {
         initCommand(new DeleteAccessConfigSubCommand());
         initCommand(new ClusterAclConfigVersionListSubCommand());
         initCommand(new UpdateGlobalWhiteAddrSubCommand());
+        initCommand(new GetAccessConfigSubCommand());
     }
 
     private static void initLogback() throws JoranException {

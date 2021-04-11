@@ -30,6 +30,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTransactionalMessageCheckListener {
@@ -48,7 +49,7 @@ public abstract class AbstractTransactionalMessageCheckListener {
             thread.setName("Transaction-msg-check-thread");
             return thread;
         }
-    });
+    }, new CallerRunsPolicy());
 
     public AbstractTransactionalMessageCheckListener() {
     }
@@ -68,7 +69,7 @@ public abstract class AbstractTransactionalMessageCheckListener {
         msgExt.setQueueId(Integer.parseInt(msgExt.getUserProperty(MessageConst.PROPERTY_REAL_QUEUE_ID)));
         msgExt.setStoreSize(0);
         String groupId = msgExt.getProperty(MessageConst.PROPERTY_PRODUCER_GROUP);
-        Channel channel = brokerController.getProducerManager().getAvaliableChannel(groupId);
+        Channel channel = brokerController.getProducerManager().getAvailableChannel(groupId);
         if (channel != null) {
             brokerController.getBroker2Client().checkProducerTransactionState(groupId, channel, checkTransactionStateRequestHeader, msgExt);
         } else {
